@@ -21,9 +21,7 @@ services:
 
     environment:
       INTERNAL_BACKEND_URL: http://backend:8000
-
-    extra_hosts:
-      - "backend:host-gateway"
+      NEXT_ALLOWED_DEV_ORIGINS: ${NEXT_ALLOWED_DEV_ORIGINS:-127.0.0.1}
 
     volumes:
       - ./uis:/app

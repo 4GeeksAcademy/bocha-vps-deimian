@@ -45,6 +45,14 @@ No se crean aplicaciones, APIs ni agentes de producto en esta fase.
 - Integrado en Docker Compose como servicio `website`, con el puerto `80:80`. Ejecucion: `docker compose up -d --build website`.
 - Conserva los servicios existentes y no mueve el sitio a otra ruta.
 
+## Reparacion del registro en Docker (05/11/2026)
+
+- Retirada la entrada `extra_hosts` que resolvia `backend` al host en lugar del contenedor de FastAPI.
+- Configurado `allowedDevOrigins` para aceptar valores externos mediante `NEXT_ALLOWED_DEV_ORIGINS`; el valor local predeterminado es `127.0.0.1`.
+- Verificado: conexion interna a FastAPI HTTP 200, `/register` publico HTTP 200 y `POST /backend/users` sin email HTTP 422, sin crear usuarios.
+- Comprobado en navegador que el formulario ejecuta el POST y muestra la respuesta mediante una peticion interceptada, sin errores de JavaScript.
+- Backoffice: los intentos repetidos devolvian 409 por email ya registrado; se prioriza el mensaje humano frente al codigo `http_error`. Verificado en navegador con un 409 interceptado y ESLint sobre `uis/backoffice/src/lib/api.ts`.
+
 ## Próximos pasos
 
 1. Validar las decisiones pendientes con Tecnología y registrar la decisión aprobada.
