@@ -14,19 +14,15 @@ services:
     build:
       context: ./uis
       dockerfile: Dockerfile
+      args:
+        INTERNAL_BACKEND_URL: http://backend:8000
 
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - "${TRACKER_PORT:-3002}:3000"
+      - "${BACKOFFICE_PORT:-3003}:3001"
 
     environment:
       INTERNAL_BACKEND_URL: http://backend:8000
-      NEXT_ALLOWED_DEV_ORIGINS: ${NEXT_ALLOWED_DEV_ORIGINS:-127.0.0.1}
-
-    volumes:
-      - ./uis:/app
-      - website_node_modules:/app/talent-pipeline-tracker/node_modules
-      - backoffice_node_modules:/app/backoffice/node_modules
 
     command: [ "sh", "/app/start.sh" ]
 
@@ -41,9 +37,6 @@ services:
       context: .
       dockerfile: services/api/Dockerfile
 
-    ports:
-      - "8000:8000"
-
     env_file:
       - ./services/api/.env
 
@@ -52,10 +45,9 @@ services:
       PYTHONPATH: /workspace
 
     volumes:
-      - ./services:/workspace/services
-      - ./packages:/workspace/packages
+      - ./services/api/inventory.db:/workspace/services/api/inventory.db
 
-    command: [ "uvicorn", "services.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload" ]
+    command: [ "uvicorn", "services.api.main:app", "--host", "0.0.0.0", "--port", "8000" ]
 
     networks:
       - company_network
@@ -64,7 +56,3 @@ networks:
   company_network:
     name: company_network
     driver: bridge
-
-volumes:
-  website_node_modules:
-  backoffice_node_modules:
